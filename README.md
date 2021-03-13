@@ -11,10 +11,12 @@ Combination of Global and Local Effects added on a recording.
 Paper proposes:
 Stereo-to-Mono
 Butterworth-Filter (Low-Pass or Bandpass)
-TanH Function for Clipping / signum for soft-clipping
-
-
-Butterworth-Filter (Lowpass)
+Clicks
+Thumps
+Hiss
+WoW
+Lowpass Filter 
+Tracking Errors
 
 
 Global Effects:
