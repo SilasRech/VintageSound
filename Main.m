@@ -29,45 +29,24 @@ beep off;
 % Possible ImprovementL Distortion effect with non-linear functions (method of playback) - Normalized Tanh function for clipping of loud signals, 
 % signum with absolute of input for soft (Page 121)
 
-[x, Fs] = audioread('harp.wav');
-
-p = zeros(length(x), 1);
-
 % Configuration 
 wow_factor = 300;
 flutter_factor = 400;
 
-%Generate Random Signal
-f = generateNoise(wow_factor, 0.2, 1.3, length(x));
-A = generateNoise(flutter_factor, 5, 5, length(x)).' * 10e-04 ;
+[x_mono, Fs] = audioread('harp.wav');
 
-subplot(3,1,1);
-t = linspace(0, length(x)/Fs, length(x));
-plot(t, f)
-xlim([0 6])
-ylim([0 2])
+%x_mono = stereo2mono(x);
 
-%Averaging to only allow transitions that are 20% of the pitch shift
-subplot(3,1,2);
-t = linspace(0, length(x)/Fs, length(x));
-plot(t, A)
-xlim([0 6])
-ylim([0 20*10e-4])
+filtered_x1 = filterSection1(x_mono);
 
-%Make Gaussian 
-p = 1 + A(:) .* sin(2*pi*f(:)); 
+variation_speed = variationalPlaybackSpeed(filtered_x1, wow_factor, flutter_factor);
 
+filtered_x2 = filterSection2(variation_speed);
 
-subplot(3,1,3);
-t = linspace(0, length(x)/Fs, length(x));
-plot(t, p)
-xlim([0 6])
-%ylim([0.99 1.02])
+output = trackError(filtered_x2, Fs);
 
-test = p' * x ;
-audiowrite('output.wav', test, Fs);
-
-test = 1;
+output = output / max(abs(output));
+audiowrite('output.wav', output, Fs);
 
 
 
