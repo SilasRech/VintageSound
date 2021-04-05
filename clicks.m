@@ -9,7 +9,7 @@ a2 = 0.2;
 b2 = 2433.8;
 
 click_vec = rand(length(input), 1);
-click_vec(click_vec > 0.9995) = 1; 
+click_vec(click_vec > 0.9992) = 1; 
 
 click_vec = floor(click_vec);
 click = zeros(length(click_vec), 1);
@@ -28,10 +28,10 @@ for k=1:length(click_vec)
     end
 end
 
-for k=1:10000:length(click_vec)-10000
+for k=1:1000:length(click_vec)-1000
     random_cutoff = random(timbre);
-    click(k:k+10000) = lowpass(click(k:k+10000),random_cutoff, fs);
+    click(k:k+1000) = lowpass(click(k:k+1000),random_cutoff, fs);
 end
 
-out = input + 0.65 * (click(1:length(input)) / max(abs(click)));
+out = input + 0.78 * (click(1:length(input)) / max(abs(click)));
 

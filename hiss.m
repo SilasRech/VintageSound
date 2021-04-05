@@ -19,6 +19,6 @@ theHiss = filter(bCoeff, aCoeff, noise);
 
 theHiss = theHiss ./ max(abs(theHiss));
 
-out = input + 0.09 * theHiss;
+out = input + 0.08 * theHiss;
 
 end

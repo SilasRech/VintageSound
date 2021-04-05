@@ -12,7 +12,7 @@ out = input;
 
 for k = Fs*2:44100:length(input)-Fs*2
     random = rand(1);
-    if random > 0.9 
+    if random > 0.8 
         out(k:k+length(thump)-1) = out(k:k+length(thump) -1 ) + thump;
      
     end
