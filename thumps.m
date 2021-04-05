@@ -1,0 +1,26 @@
+Fs = 44100; 
+
+input = zeros(0.3 * 44100, 1);
+
+input(round(0.03 * 44100), 1) = -0.7;
+
+click = - 0.7 + zeros(round(0.0001 * Fs), 1);
+
+timeSine = 0 : 1 / Fs : 0.3 - 1 / Fs;
+
+Fc = 10;
+
+oscillation = 0.3 * sin(2 * pi * Fc * timeSine) - 0.2;
+
+oscillation = (oscillation .* exp(-timeSine * 15))';
+
+thump = [zeros(round(0.03 * Fs), 1); click; oscillation];
+
+artefacts = -0.005 + (0.005 + 0.005) * rand(length(thump), 1);
+
+timeAxis = linspace(0, length(thump) / Fs, length(thump));
+
+figure
+plot(timeAxis, thump);
+ylim([-1, 1]);
+
