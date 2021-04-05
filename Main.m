@@ -33,19 +33,26 @@ beep off;
 wow_factor = 300;
 flutter_factor = 400;
 
-[x_mono, Fs] = audioread('harp.wav');
+[x, Fs] = audioread('harp.wav');
 
-%x_mono = stereo2mono(x);
+x_mono = stereo2mono(x_mono);
 
 filtered_x1 = filterSection1(x_mono);
 
-variation_speed = variationalPlaybackSpeed(filtered_x1, wow_factor, flutter_factor);
+xClicks = clicks(filtered_x1, Fs);
+
+audioWithThumps = thumps(xClicks, Fs);
+
+xHiss = hiss(audioWithThumps, Fs);
+
+variation_speed = variationalPlaybackSpeed(xHiss, wow_factor, flutter_factor);
 
 filtered_x2 = filterSection2(variation_speed);
 
 output = trackError(filtered_x2, Fs);
 
 output = output / max(abs(output));
+
 audiowrite('output.wav', output, Fs);
 
 
