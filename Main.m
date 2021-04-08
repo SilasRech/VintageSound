@@ -32,18 +32,24 @@ beep off;
 % Configuration 
 wow_factor = 300;
 flutter_factor = 400;
+clicks_ratio = 0.2;
+hiss_ratio = 0.2;
+thumps_ratio = 0.2;
 
-[x, Fs] = audioread('harp.wav');
 
-x_mono = stereo2mono(x_mono);
+[x, Fs] = audioread('GodsPlanPure.wav');
 
-filtered_x1 = filterSection1(x_mono);
+x_mono = stereo2mono(x);
 
-xClicks = clicks(filtered_x1, Fs);
+%variation_speed = variationalPlaybackSpeed(x, wow_factor, flutter_factor);
 
-audioWithThumps = thumps(xClicks, Fs);
+filtered_x1 = filterSection1(x);
 
-xHiss = hiss(audioWithThumps, Fs);
+xClicks = clicks(filtered_x1, Fs, clicks_ratio);
+
+audioWithThumps = thumps(xClicks, Fs, thumps_ratio);
+
+xHiss = hiss(audioWithThumps, Fs, hiss_ratio);
 
 variation_speed = variationalPlaybackSpeed(xHiss, wow_factor, flutter_factor);
 
@@ -53,7 +59,7 @@ output = trackError(filtered_x2, Fs);
 
 output = output / max(abs(output));
 
-audiowrite('output.wav', output, Fs);
+audiowrite('output_new.wav', output, Fs);
 
 
 

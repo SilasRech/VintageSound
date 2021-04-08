@@ -1,4 +1,4 @@
-function out = clicks(input, fs)
+function out = clicks(input, fs, clicks_ratio)
 
 mu = -3.6267;
 sigma = 0.7421;
@@ -33,5 +33,5 @@ for k=1:1000:length(click_vec)-1000
     click(k:k+1000) = lowpass(click(k:k+1000),random_cutoff, fs);
 end
 
-out = input + 0.78 * (click(1:length(input)) / max(abs(click)));
+out = input + clicks_ratio * (click(1:length(input)) / max(abs(click)));
 

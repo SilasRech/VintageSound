@@ -1,4 +1,4 @@
-function [out] = hiss(input, Fs)
+function [out] = hiss(input, Fs, hiss_ratio)
 
 L = length(input);
 
@@ -19,6 +19,6 @@ theHiss = filter(bCoeff, aCoeff, noise);
 
 theHiss = theHiss ./ max(abs(theHiss));
 
-out = input + 0.08 * theHiss;
+out = input + 0.08 * hiss_ratio * theHiss;
 
 end
