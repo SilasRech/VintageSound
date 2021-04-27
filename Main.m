@@ -1,65 +1,67 @@
 beep off;
-
-% Paper proposes: 
-% Stereo-to-Mono || Maddie 
-% Butterworth-Filter Low-Pass || Maddie 
-% Clicks || Maddie 
-% Thumps || Maddie 
-% Hiss || Maddie 
-% WoW || Silas 
-% Lowpass Filter || Maddie 
-% Tracking Errors || Silas
+% Pipeline Structure: 
+% Stereo-to-Mono
+% Butterworth-Filter Low-Pass 
+% Clicks 
+% Thumps  
+% Hiss 
+% WoW 
+% Lowpass Filter 
+% Tracking Errors 
 
 % Global Effects:
 % 
-%     Limit low-end (as storage limits it) - with Butterworth filters but chebyshef or Cauer may be better for real time || Maddie
-%     Periodic Function that controls Playback Speed (0,1%-0,5% of playbackspeed) - 
-%     Creation of time-warp function + Resampling of audiowaveform || Silas
-%     Additive white noise (electrical circuit, ambient etc.) - Low-passed white noise (Page 124) || Maddie
+%     1. Limit low-end (as storage limits it) - with Butterworth filters but chebyshef or Cauer may be better for real time 
+%     2. Periodic Function that controls Playback Speed (0,1%-0,5% of playbackspeed) - 
+%     Creation of time-warp function + Resampling of audiowaveform
+%     3. Additive white noise (electrical circuit, ambient etc.) - Low-passed white noise  
 % 
 % Local Effects:
 % 
-%     Repeating a 1.8 seconds part of a song every once in a while (Tracking Errors) || Silas
-%     Small impulses of 1ms - white-noise bursts with a alternating Butterworth filter // the clicks need to change in pitch! || Maddie
-%     Thumps || Maddie
+%     4. Tracking Erros Repeating a 1.8 seconds part of a song every once in a while 
+%     5. Clicks Small impulses of 1ms - white-noise bursts with a alternating Butterworth filter 
+%     6. Thumps 
 % 
-% Questions: Distortion parallel or sequential? Is the Envelope Function Responsible for the Pitch Shift Strength and also random? 
-% Do we want to spend time on the reproduction of clicks? With a reference signal and filtering the clicks etc (Page 125)
-% 
-% Possible ImprovementL Distortion effect with non-linear functions (method of playback) - Normalized Tanh function for clipping of loud signals, 
-% signum with absolute of input for soft (Page 121)
 
 % Configuration 
-wow_factor = 300;
-flutter_factor = 400;
-clicks_ratio = 0.2;
-hiss_ratio = 0.2;
-thumps_ratio = 0.2;
 
+% Strength of perceived variation
+variation_ratio = 3;
 
-[x, Fs] = audioread('GodsPlanPure.wav');
+% Strength and occurrence of clicks in new recording
+clicks_ratio = 0.9;
 
+% Percentage of amplitude hiss added into recording
+hiss_ratio = 0.6;
+
+% Percentage of amplitude of thump in recording
+thumps_ratio = 1.1;
+
+wow_factor = round(300*variation_ratio);
+flutter_factor = round(400* variation_ratio);
+
+% Read in File
+[x, Fs] = audioread('harp.wav');
+%% Mono and lowpass filtering
 x_mono = stereo2mono(x);
 
-%variation_speed = variationalPlaybackSpeed(x, wow_factor, flutter_factor);
-
-filtered_x1 = filterSection1(x);
-
-xClicks = clicks(filtered_x1, Fs, clicks_ratio);
-
+filtered_x1 = filterSection1(x_mono, Fs, "LP");
+%% Clicks
+xClicks = clicks(x_mono, Fs, clicks_ratio);
+%% Thumps
 audioWithThumps = thumps(xClicks, Fs, thumps_ratio);
-
+%% Hiss
 xHiss = hiss(audioWithThumps, Fs, hiss_ratio);
-
+%% Wow and flutter
 variation_speed = variationalPlaybackSpeed(xHiss, wow_factor, flutter_factor);
-
-filtered_x2 = filterSection2(variation_speed);
-
+%% Lowpass
+filtered_x2 = filterSection2(variation_speed, Fs, "LP");
+%% Tracking Error
 output = trackError(filtered_x2, Fs);
-
+%%
 output = output / max(abs(output));
 
-audiowrite('output_new.wav', output, Fs);
+audiowrite('HarpOutBad.wav', output, Fs);
 
 
 

@@ -1,6 +1,18 @@
-function filteredAudio = filterSection2(audioIn)
-
-    SOS_filter2 = butterworth(44100, 4000, 18000, 0.46, 10);
+function filteredAudio = filterSection2(audioIn, Fs, type_filt)
+    
+     if type_filt == "LP"
+         Fpass = 4000;
+         Fstop = 18000;
+         Apass = 0.46;
+         Astop = 10; 
+     else
+         Fpass = 2000;
+         Fstop = 7500;
+         Apass = 0.46;
+         Astop = 20; 
+    end
+    
+    SOS_filter2 = butterworth(Fs, Fpass, Fstop, Apass, Astop);
 
     [bCoeff, aCoeff] = sos2tf(SOS_filter2.sosMatrix);
 
